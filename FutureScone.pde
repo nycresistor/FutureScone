@@ -5,9 +5,18 @@ LaserGrid grid;
 TotuClient totu;
 PFont font;
 PFont fontSmall;
-String path;
-int screen = 0;
 int loop = 30;
+/*
+int rotations[] = new int[] {    
+  90,-90,90,90,90,90,90,90,90,-90,-90,-90,-90,-90,-90,-90,
+   90,-90,90,-90,-90,90,90,90,-90,90,-90,-90,90,90,90,90
+};
+*/
+
+int rotations[] = new int[] {    
+  -90,-90,-90,-90,-90,-90,-90,90,90,90,90,90,90,90,-90,90,
+   90,90,90,90,-90,-90,-90,-90,90,90,90,-90,-90,-90,-90,90
+}; 
 
 void setup() {
   size(240,320,P3D);
@@ -15,24 +24,8 @@ void setup() {
   grid = new LaserGrid();
   font = loadFont("HydrogenWhiskey-Regular-32.vlw");
   fontSmall = loadFont("HydrogenWhiskey-Regular-24.vlw");
-  findPath();
   
-  //totu = new TotuClient(this, "192.168.1.251", 9000, false);
-}
-
-void findPath() {
-  int i=0;
-  File f;
-  
-  do {
-    path = dataPath("run" + i);
-    f = new File(path);
-    i++;
-  } 
-  while (f.exists());
-  
-  f.mkdirs();
-  println("Saving to " + path);
+  totu = new TotuClient(this, "192.168.1.251", 9000, TotuClient.SAVE);
 }
 
 
@@ -49,16 +42,12 @@ void reset() {
   r2s = 1.0/(loop/2);
   c = 50;
   cs = 1;
-  screen++;
-  if (screen > 31) {
-    screen = 0;
-    findPath();
-  }
+//  screen++;
+//  if (screen > 31) {
+//    screen = 0;
+//  }
 }
 
-String zp(int n) {
-  return n<10 ? "0" + n : "" + n;
-}
 
 void draw() {
 
@@ -67,8 +56,7 @@ void draw() {
   }
 
 
-  background(0);
-  
+  background(0);  
   fill(255);
   lights();
 
@@ -97,13 +85,36 @@ void draw() {
   textFont(fontSmall);
   text("1984", width/2, 42);
 
-  
-  int f = (frameCount-1) % loop;
-  String fp = path + "/" + zp(f) + "-" + (screen < 16 ? "A" + zp(screen) : "B" + zp(screen-16)) + ".png";
-  saveFrame(fp);
-  println("Saved to '"+fp+"'");
-  
+/*  
+  if (frameCount < 31) {
+    totu.sendData(0xFFFF, 90);
+    
+    if (frameCount == 30) {
+      totu.resetFrameCount();
+    }
+  }
+  else if (frameCount < 61) {
+    totu.sendData(0x1FFFF, 90);
+  }
+  else {
+    exit();
+  }
+*/
 
- // totu.sendDataNormal(0xFFFF,-90);
+  int screen = frameCount % 32;
+  int mask = 0;
+  if (screen > 15) {
+    mask = 0x10000 | (1<<(screen-16));
+  }
+  else  {
+    mask = 1<<screen;
+  }
+
+  textFont(font);
+  text(screen, width/2, 100);
+  
+  println(screen);
+  totu.sendData(mask, rotations[screen]);
+   
 }
 
