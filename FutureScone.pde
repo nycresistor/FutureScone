@@ -6,17 +6,19 @@ TotuClient totu;
 PFont font;
 PFont fontSmall;
 int loop = 30;
-/*
-int rotations[] = new int[] {    
-  90,-90,90,90,90,90,90,90,90,-90,-90,-90,-90,-90,-90,-90,
-   90,-90,90,-90,-90,90,90,90,-90,90,-90,-90,90,90,90,90
-};
-*/
 
+/* CORRECT 251 */
+//int rotations[] = new int[] {    
+//  -90,-90,-90,-90,-90,-90,-90,90,90,90,90,90,90,90,-90,90,
+//   90,90,90,90,-90,-90,-90,-90,90,90,90,-90,-90,-90,-90,90
+//}; 
+
+/* CORRECT 250 */
 int rotations[] = new int[] {    
-  -90,-90,-90,-90,-90,-90,-90,90,90,90,90,90,90,90,-90,90,
-   90,90,90,90,-90,-90,-90,-90,90,90,90,-90,-90,-90,-90,90
+  -90,-90,90,90,-90,-90,90,90,90,90,90,-90,-90,-90,-90,90,
+   90,90,90,90,-90,-90,-90,-90,90,-90,90,90,90,90,-90,90
 }; 
+
 
 void setup() {
   size(240,320,P3D);
@@ -85,22 +87,6 @@ void draw() {
   textFont(fontSmall);
   text("1984", width/2, 42);
 
-/*  
-  if (frameCount < 31) {
-    totu.sendData(0xFFFF, 90);
-    
-    if (frameCount == 30) {
-      totu.resetFrameCount();
-    }
-  }
-  else if (frameCount < 61) {
-    totu.sendData(0x1FFFF, 90);
-  }
-  else {
-    exit();
-  }
-*/
-
   int screen = frameCount % 32;
   int mask = 0;
   if (screen > 15) {
@@ -110,11 +96,11 @@ void draw() {
     mask = 1<<screen;
   }
 
-  textFont(font);
-  text(screen, width/2, 100);
+  //textFont(font);
+  //text(screen, width/2, 100);
   
-  println(screen);
-  totu.sendData(mask, rotations[screen]);
+  //println(screen);
+  //totu.sendData(mask, rotations[screen]);
    
 }
 
