@@ -280,5 +280,9 @@ public class TotuClient {
   void resetFrameCount() {
     this.frame = 0;
   }
+  
+  void setFrameCount(int frame) {
+    this.frame = frame;
+  }
 }
 

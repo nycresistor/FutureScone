@@ -6,28 +6,30 @@ TotuClient totu;
 PFont font;
 PFont fontSmall;
 int loop = 30;
+int screen = 0;
 
 /* CORRECT 251 */
-//int rotations[] = new int[] {    
-//  -90,-90,-90,-90,-90,-90,-90,90,90,90,90,90,90,90,-90,90,
-//   90,90,90,90,-90,-90,-90,-90,90,90,90,-90,-90,-90,-90,90
-//}; 
-
-/* CORRECT 250 */
 int rotations[] = new int[] {    
-  -90,-90,90,90,-90,-90,90,90,90,90,90,-90,-90,-90,-90,90,
-   90,90,90,90,-90,-90,-90,-90,90,-90,90,90,90,90,-90,90
+  -90,-90,-90,-90,-90,-90,-90,90,90,90,90,90,90,90,-90,90,
+   90,90,90,90,-90,-90,-90,-90,90,90,90,-90,-90,-90,-90,90
 }; 
 
+/* CORRECT 250 */
+//int rotations[] = new int[] {    
+//  -90,-90,90,90,-90,-90,90,90,90,90,90,-90,-90,-90,-90,90,
+//   90,90,90,90,-90,-90,-90,-90,90,-90,90,90,90,90,-90,90
+//}; 
 
 void setup() {
-  size(240,320,P3D);
-  
+  size(240, 320, P3D);
+
   grid = new LaserGrid();
   font = loadFont("HydrogenWhiskey-Regular-32.vlw");
   fontSmall = loadFont("HydrogenWhiskey-Regular-24.vlw");
-  
+
   totu = new TotuClient(this, "192.168.1.251", 9000, TotuClient.SAVE);
+  
+  reset();
 }
 
 
@@ -44,33 +46,44 @@ void reset() {
   r2s = 1.0/(loop/2);
   c = 50;
   cs = 1;
-//  screen++;
-//  if (screen > 31) {
-//    screen = 0;
-//  }
+  //  screen++;
+  //  if (screen > 31) {
+  //    screen = 0;
+  //  }
 }
 
 
 void draw() {
 
-  if ((frameCount-1) % loop == 0) {
+  if (frameCount > 1 && (frameCount-1) % loop == 0) {
     reset();
+    
+    screen++;    
+    if (screen > 31) exit();
   }
-
 
   background(0);  
   fill(255);
-  lights();
+//  lights();
+
+
+  pushMatrix();
+  fill(200, 120, 0);
+  translate(0, 500, -1000);
+  ellipse(width / 2, height / 2, 1800, 1000);
+  popMatrix();
 
   grid.draw();
-  
+
+
+
   pushMatrix();
-  translate(width/2,height/2,50);
+  translate(width/2, height/2-10, 50);
   rotateX(r2);
   rotateZ(r);
   scone.draw();
   popMatrix();
-  
+
   r=r + TWO_PI/loop;
   r2=r2+r2s;
   if (frameCount % loop == loop/2 || frameCount % loop == 0) 
@@ -81,26 +94,22 @@ void draw() {
 
   c += cs;
   if (c <= 50 || c >= 100) cs = -cs;  
-  fill(255,c,c);
+  fill(255, c, c);
   text("FUTURE SCONE", width/2, 10);
-  
+
   textFont(fontSmall);
   text("1984", width/2, 42);
 
-  int screen = frameCount % 32;
+  totu.setFrameCount((frameCount-1) % loop);
+
   int mask = 0;
   if (screen > 15) {
     mask = 0x10000 | (1<<(screen-16));
-  }
-  else  {
+  } else {
     mask = 1<<screen;
   }
 
-  //textFont(font);
-  //text(screen, width/2, 100);
+  totu.sendData(mask, rotations[screen]);
   
-  //println(screen);
-  //totu.sendData(mask, rotations[screen]);
-   
 }
 
